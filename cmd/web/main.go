@@ -38,6 +38,8 @@ func main() {
 		errLog:  log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime|log.Llongfile),
 	}
 
+	// with jet, you can render templates with data
+	// with jet.InDevelopmentMode is true, auto reload templates
 	if app.debug {
 		app.view = jet.NewSet(jet.NewOSFileSystemLoader("./views"), jet.InDevelopmentMode())
 	} else {
