@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/CloudyKit/jet/v6"
+	"github.com/alexedwards/scs/v2"
 )
 
 type application struct {
@@ -15,6 +18,7 @@ type application struct {
 	errLog  *log.Logger
 	infoLog *log.Logger
 	view    *jet.Set
+	session *scs.SessionManager
 }
 
 type server struct {
@@ -45,6 +49,14 @@ func main() {
 	} else {
 		app.view = jet.NewSet(jet.NewOSFileSystemLoader("./views"), jet.InDevelopmentMode())
 	}
+
+	// init session manager
+	app.session = scs.New()
+	app.session.Lifetime = 24 * time.Hour
+	app.session.Cookie.Persist = true
+	app.session.Cookie.Name = app.appName
+	app.session.Cookie.Domain = app.server.host
+	app.session.Cookie.SameSite = http.SameSiteStrictMode
 
 	if err := app.listenAnServe(); err != nil {
 		log.Fatal(err)
